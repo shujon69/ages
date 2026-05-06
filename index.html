@@ -9,7 +9,7 @@
     <meta name="description" content="লাইভ বয়স গণনার একটি সহজ এবং সুন্দর ওয়েব অ্যাপ।">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#c62828">
-    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -281,7 +281,7 @@
 
         <div class="list-area" id="listArea"></div>
 
-        <footer class="footer">রব্বি হাবলি মিনাস সলিহিন <i class="fas fa-heart"></i></footer>
+        <footer class="footer">ভালোবাসায় তৈরি <i class="fas fa-heart"></i></footer>
     </div>
 
     <script>
@@ -320,12 +320,12 @@
             /* ====== ৬ জনের তথ্য ====== */
             const PEOPLE = [
                 { name: 'সুনেরাহ বিনতে শেখ (সুনাইবা)',  dob: new Date(2026, 3, 16, 22, 45, 0), color: '#e53935', icon: 'fa-baby' },
-                { name: 'সাজিদ আল হাসান',  dob: new Date(2022, 11, 26, 16, 35, 0),  color: '#1e88e5', icon: 'fa-user' },
+                { name: 'সাজิด আল হাসান',  dob: new Date(2022, 11, 26, 17, 10, 0),  color: '#1e88e5', icon: 'fa-user' },
                 { name: 'রাফিয়া জাহান সাবিহা',      dob: new Date(2019, 2, 17, 16, 10, 0), color: '#e91e63', icon: 'fa-user' },
-                { name: 'সুহা উদ্দৌলা সিন',    dob: new Date(2016, 9, 23, 07, 39, 0),   color: '#43a047', icon: 'fa-user' },
+                { name: 'সুহা উদ্দৌলা সিন',    dob: new Date(2016, 9, 23, 0, 0, 0),   color: '#43a047', icon: 'fa-user' },
                 { name: 'রাজীব আল হাসান (রুশো)',       dob: new Date(2012, 1, 30, 13, 10, 0),  color: '#8e24aa', icon: 'fa-user' },
                 { name: 'জাকিয়া তাসনিম স্বপ্ন',       dob: new Date(2007, 2, 19, 22, 30, 0),  color: '#ff8f00', icon: 'fa-user' },
-            ].sort((a,b) => b.dob - a.dob); // Sort by newest first
+            ].sort((a,b) => b.dob - a.dob);
 
             /* ====== বয়স হিসাব ====== */
             function calcAge(dob) {
@@ -494,14 +494,12 @@
             tick();
             setInterval(tick, 1000);
 
-            // PWA Service Worker Registration
+            // GitHub-friendly Relative Registration (./sw.js)
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+                    navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered!', reg.scope))
+                    .catch(err => console.log('SW Failed!', err));
                 });
             }
         });
