@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA and Theme Meta Tags -->
+    <title>বয়স গণনা লাইভ</title>
+    <meta name="description" content="লাইভ বয়স গণনার একটি সহজ এবং সুন্দর ওয়েব অ্যাপ।">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f7f8fc;
+            --bg-card: #ffffff;
+            --primary: #c62828;
+            --primary-mid: #d32f2f;
+            --primary-light: #ef5350;
+            --primary-dark: #b71c1c;
+            --accent: #ff8f00;
+            --accent-light: #ffab40;
+            --text: #2c3e50;
+            --text-light: #34495e;
+            --text-muted: #7f8c8d;
+            --border: rgba(44, 62, 80, 0.1);
+            --shadow: rgba(44, 62, 80, 0.08);
+            --glow: rgba(211, 47, 47, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative; z-index: 1;
+            max-width: 480px; margin: 0 auto;
+            padding: 8px 14px 4px;
+            height: 100%;
+            display: flex; flex-direction: column;
+        }
+
+        /* === হেডার === */
+        .header {
+            text-align: center;
+            padding: 8px 0 6px;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .header-icon-wrap {
+            position: relative;
+            width: 48px; height: 48px;
+            margin: 0 auto 8px;
+        }
+
+        .header-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(145deg, var(--primary-mid), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px var(--shadow), 0 0 0 3px #fff, 0 0 0 4px var(--primary-light);
+            transition: transform 0.3s ease;
+        }
+        .header-icon i { font-size: 20px; color: #fff; }
+
+        .header h1 {
+            font-size: 22px; font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+        
+        #current-date-display {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            background-color: rgba(44, 62, 80, 0.04);
+            padding: 4px 8px;
+            border-radius: 16px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* === তালিকা এরিয়া === */
+        .list-area {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding: 4px 2px;
+        }
+
+        .list-area::-webkit-scrollbar { width: 4px; }
+        .list-area::-webkit-scrollbar-track { background: transparent; }
+        .list-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .list-area::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+        /* === এক্সপ্যান্ডেবল রো === */
+        .person-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .person-row:hover {
+            border-color: rgba(200, 40, 40, 0.3);
+        }
+
+        .person-row.active {
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(200, 40, 40, 0.15);
+        }
+
+        .person-head {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            cursor: pointer;
+            gap: 12px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .person-avatar {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 800;
+            flex-shrink: 0;
+            color: #fff;
+        }
+
+        .person-info { flex: 1; min-width: 0; }
+
+        .person-name {
+            font-size: 14px; font-weight: 700; color: var(--text-light);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .person-dob {
+            font-size: 11px; color: var(--text-muted); margin-top: 2px;
+        }
+
+        .person-brief {
+            text-align: right; flex-shrink: 0;
+        }
+
+        .person-brief-age {
+            font-size: 13px; font-weight: 800; color: var(--primary);
+        }
+
+        .person-brief-sub {
+            font-size: 10px; color: var(--text-muted); margin-top: 2px;
+        }
+
+        .person-chevron {
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .person-row.active .person-chevron {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        /* === এক্সপ্যান্ড বডি === */
+        .person-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .person-body-inner { padding: 0 14px 14px; }
+        .body-divider { height: 1px; background: var(--border); margin-bottom: 12px; }
+
+        /* বয়স কার্ড */
+        .body-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 12px;
+        }
+        .body-card {
+            background: #fdfdfd; border: 1px solid var(--border);
+            border-radius: 10px; padding: 10px 4px; text-align: center;
+        }
+        .body-card-val {
+            font-size: 19px; font-weight: 700; color: var(--text);
+            line-height: 1.1; font-variant-numeric: tabular-nums;
+        }
+        .body-card-lbl {
+            font-size: 9px; color: var(--text-muted);
+            margin-top: 4px; font-weight: 500;
+        }
+        .body-cards.primary .body-card {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            border: none; color: #fff;
+        }
+        .body-cards.primary .body-card-val {
+            font-size: 28px; font-weight: 800; color: #fff;
+        }
+        .body-cards.primary .body-card-lbl {
+            font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.8);
+        }
+
+        .body-text-bar {
+            text-align: center; padding: 8px 10px;
+            background-color: rgba(200, 40, 40, 0.05);
+            border: 1px solid rgba(200, 40, 40, 0.1);
+            border-radius: 8px;
+            font-size: 12px; font-weight: 700; color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .body-total-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--border);
+        }
+        .body-total-row:last-child { border-bottom: none; }
+        .body-total-left { display: flex; align-items: center; gap: 8px; }
+        .body-total-ico {
+            width: 24px; height: 24px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; flex-shrink: 0;
+        }
+        .body-total-ico.c1 { background: rgba(255,171,64,0.15); color: #ff8f00; }
+        .body-total-ico.c2 { background: rgba(239,83,80,0.15); color: #ef5350; }
+        .body-total-ico.c3 { background: rgba(66,165,245,0.15); color: #42a5f5; }
+        .body-total-ico.c4 { background: rgba(129,199,132,0.15); color: #81c784; }
+        .body-total-ico.c5 { background: rgba(186,104,200,0.15); color: #ba68c8; }
+        .body-total-ico.c6 { background: rgba(255,138,101,0.15); color: #ff8a65; }
+        .body-total-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+        .body-total-val { font-size: 12px; font-weight: 700; color: var(--text-light); font-variant-numeric: tabular-nums; }
+
+        /* === ফুটার === */
+        .footer {
+            text-align: center; margin-top: 8px; padding-top: 8px;
+            border-top: 1px solid var(--border);
+            font-size: 10px; color: #b0b8c0;
+            flex-shrink: 0;
+        }
+        .footer i { color: var(--primary-light); margin: 0 3px; font-size: 8px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-icon-wrap">
+                <div class="header-icon"><i class="fas fa-heart-pulse"></i></div>
+            </div>
+            <h1>বয়স গণনা</h1>
+            <div id="current-date-display">...</div>
+        </header>
+
+        <div class="list-area" id="listArea"></div>
+
+        <footer class="footer">রব্বি হাবলি মিনাস সলিহিন <i class="fas fa-heart"></i></footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* ====== বাংলা সংখ্যা ও ফরম্যাটিং ====== */
+            const BN_DIGITS = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+            const BN_MONTHS = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+            const BN_DAYS = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+
+            const toBn = n => String(n).replace(/\d/g, d => BN_DIGITS[d]);
+            const pad = n => String(n).padStart(2, '0');
+
+            function fmtBnNum(n) {
+                return new Intl.NumberFormat('bn-BD').format(n);
+            }
+
+            function fmtDob(dob) {
+                const d = dob.getDate();
+                const m = BN_MONTHS[dob.getMonth()];
+                const y = toBn(dob.getFullYear());
+                let hh = dob.getHours();
+                const mm = toBn(pad(dob.getMinutes()));
+                let period = 'সকাল';
+                if (hh >= 12) period = 'দুপুর';
+                if (hh >= 16) period = 'বিকাল';
+                if (hh >= 18) period = 'সন্ধ্যা';
+                if (hh >= 20 || hh < 5) period = 'রাত';
+                
+                if (hh > 12) hh -= 12;
+                if (hh === 0) hh = 12;
+
+                return `${toBn(d)} ${m} ${y}, ${period} ${toBn(pad(hh))}:${mm}`;
+            }
+
+            /* ====== ৬ জনের তথ্য ====== */
+            const PEOPLE = [
+                { name: 'সুনেরাহ বিনতে শেখ (সুনাইবা)',  dob: new Date(2026, 3, 16, 22, 45, 0), color: '#e53935', icon: 'fa-baby' },
+                { name: 'সাজিদ আল হাসান',  dob: new Date(2022, 11, 26, 16, 35, 0),  color: '#1e88e5', icon: 'fa-user' },
+                { name: 'রাফিয়া জাহান সাবিহা',      dob: new Date(2019, 2, 17, 16, 10, 0), color: '#e91e63', icon: 'fa-user' },
+                { name: 'সুহা উদ্দৌলা সিন',    dob: new Date(2016, 9, 23, 07, 39, 0),   color: '#43a047', icon: 'fa-user' },
+                { name: 'রাজীব আল হাসান (রুশো)',       dob: new Date(2012, 1, 30, 13, 10, 0),  color: '#8e24aa', icon: 'fa-user' },
+                { name: 'জাকিয়া তাসনিম স্বপ্ন',       dob: new Date(2007, 2, 19, 22, 30, 0),  color: '#ff8f00', icon: 'fa-user' },
+            ].sort((a,b) => b.dob - a.dob); // Sort by newest first
+
+            /* ====== বয়স হিসাব ====== */
+            function calcAge(dob) {
+                const now = new Date();
+                const diff = now - dob;
+                const born = diff >= 0;
+
+                if (!born) {
+                    const a = Math.abs(diff);
+                    const ts = Math.floor(a / 1000);
+                    const tm = Math.floor(ts / 60);
+                    const th = Math.floor(tm / 60);
+                    const td = Math.floor(th / 24);
+                    return { born: false, d: td, h: th % 24, m: tm % 60, s: ts % 60 };
+                }
+
+                let y = now.getFullYear() - dob.getFullYear();
+                let mo = now.getMonth() - dob.getMonth();
+                let d = now.getDate() - dob.getDate();
+                let h = now.getHours() - dob.getHours();
+                let mi = now.getMinutes() - dob.getMinutes();
+                let s = now.getSeconds() - dob.getSeconds();
+
+                if (s < 0) { s += 60; mi--; }
+                if (mi < 0) { mi += 60; h--; }
+                if (h < 0) { h += 24; d--; }
+                if (d < 0) {
+                    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    d += prevMonth.getDate();
+                    mo--;
+                }
+                if (mo < 0) { mo += 12; y--; }
+
+                const totalS = Math.floor(diff / 1000);
+                return {
+                    born: true, y, mo, d, h, mi, s,
+                    totalMo: y * 12 + mo,
+                    totalW: Math.floor(Math.floor(totalS / 86400) / 7),
+                    totalD: Math.floor(totalS / 86400),
+                    totalH: Math.floor(totalS / 3600),
+                    totalMi: Math.floor(totalS / 60),
+                    totalS
+                };
+            }
+
+            /* ====== DOM তৈরি ====== */
+            const listArea = document.getElementById('listArea');
+            const rows = [];
+
+            PEOPLE.forEach((p, i) => {
+                const row = document.createElement('div');
+                row.className = 'person-row';
+                row.dataset.idx = i;
+
+                row.innerHTML = `
+                    <div class="person-head">
+                        <div class="person-avatar" style="background-color:${p.color};">
+                            <i class="fas ${p.icon}"></i>
+                        </div>
+                        <div class="person-info">
+                            <div class="person-name">${p.name}</div>
+                            <div class="person-dob">${fmtDob(p.dob)}</div>
+                        </div>
+                        <div class="person-brief">
+                            <div class="person-brief-age" data-brief="${i}">...</div>
+                            <div class="person-brief-sub">বিস্তারিত</div>
+                        </div>
+                        <div class="person-chevron"><i class="fas fa-chevron-down"></i></div>
+                    </div>
+                    <div class="person-body">
+                        <div class="person-body-inner">
+                            <div class="body-divider"></div>
+                            <div class="body-cards primary">
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-y">০০</div><div class="body-card-lbl">বছর</div></div>
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-mo">০০</div><div class="body-card-lbl">মাস</div></div>
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-d">০০</div><div class="body-card-lbl">দিন</div></div>
+                            </div>
+                            <div class="body-text-bar" data-v="${i}-txt">...</div>
+                            <div class="body-cards">
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-h">০০</div><div class="body-card-lbl">ঘণ্টা</div></div>
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-mi">০০</div><div class="body-card-lbl">মিনিট</div></div>
+                                <div class="body-card"><div class="body-card-val" data-v="${i}-s">০০</div><div class="body-card-lbl">সেকেন্ড</div></div>
+                            </div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c1"><i class="fas fa-calendar"></i></div><span class="body-total-lbl">মোট মাস</span></div><span class="body-total-val" data-v="${i}-tmo">০</span></div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c2"><i class="fas fa-calendar-week"></i></div><span class="body-total-lbl">মোট সপ্তাহ</span></div><span class="body-total-val" data-v="${i}-tw">০</span></div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c3"><i class="fas fa-calendar-day"></i></div><span class="body-total-lbl">মোট দিন</span></div><span class="body-total-val" data-v="${i}-td">০</span></div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c4"><i class="fas fa-clock"></i></div><span class="body-total-lbl">মোট ঘণ্টা</span></div><span class="body-total-val" data-v="${i}-th">০</span></div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c5"><i class="fas fa-stopwatch"></i></div><span class="body-total-lbl">মোট মিনিট</span></div><span class="body-total-val" data-v="${i}-tmi">০</span></div>
+                            <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c6"><i class="fas fa-hourglass-half"></i></div><span class="body-total-lbl">মোট সেকেন্ড</span></div><span class="body-total-val" data-v="${i}-ts">০</span></div>
+                        </div>
+                    </div>
+                `;
+
+                row.querySelector('.person-head').addEventListener('click', () => {
+                    const isActive = row.classList.contains('active');
+                    rows.forEach(r => {
+                        r.classList.remove('active');
+                        r.querySelector('.person-body').style.maxHeight = '0px';
+                    });
+
+                    if (!isActive) {
+                        row.classList.add('active');
+                        const body = row.querySelector('.person-body');
+                        body.style.maxHeight = body.scrollHeight + 'px';
+                        setTimeout(() => row.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+                    }
+                });
+
+                listArea.appendChild(row);
+                rows.push(row);
+            });
+            
+            const currentDateEl = document.getElementById('current-date-display');
+
+            /* ====== আপডেট লুপ ====== */
+            function tick() {
+                // Update current date display
+                const now = new Date();
+                const day = BN_DAYS[now.getDay()];
+                const date = fmtDob(now);
+                currentDateEl.textContent = `আজ ${day}, ${date}`;
+
+                PEOPLE.forEach((p, i) => {
+                    const d = calcAge(p.dob);
+                    const row = rows[i];
+
+                    const briefEl = row.querySelector(`[data-brief="${i}"]`);
+                    const textBarEl = row.querySelector(`[data-v="${i}-txt"]`);
+
+                    if (!d.born) {
+                        const countdownText = `আসতে বাকি ${fmtBnNum(d.d)} দিন`;
+                        briefEl.textContent = countdownText;
+                        textBarEl.textContent = countdownText;
+                        return;
+                    }
+
+                    const briefText = d.y > 0 ? `${toBn(d.y)} বছর ${toBn(d.mo)} মাস`
+                                   : d.mo > 0 ? `${toBn(d.mo)} মাস ${toBn(d.d)} দিন`
+                                              : `${toBn(d.d)} দিন`;
+                    briefEl.textContent = briefText;
+                    textBarEl.textContent = `${toBn(d.y)} বছর ${toBn(d.mo)} মাস ${toBn(d.d)} দিন`;
+
+                    row.querySelector(`[data-v="${i}-y"]`).textContent = toBn(pad(d.y));
+                    row.querySelector(`[data-v="${i}-mo"]`).textContent = toBn(pad(d.mo));
+                    row.querySelector(`[data-v="${i}-d"]`).textContent = toBn(pad(d.d));
+                    row.querySelector(`[data-v="${i}-h"]`).textContent = toBn(pad(d.h));
+                    row.querySelector(`[data-v="${i}-mi"]`).textContent = toBn(pad(d.mi));
+                    row.querySelector(`[data-v="${i}-s"]`).textContent = toBn(pad(d.s));
+                    
+                    row.querySelector(`[data-v="${i}-tmo"]`).textContent = fmtBnNum(d.totalMo);
+                    row.querySelector(`[data-v="${i}-tw"]`).textContent = fmtBnNum(d.totalW);
+                    row.querySelector(`[data-v="${i}-td"]`).textContent = fmtBnNum(d.totalD);
+                    row.querySelector(`[data-v="${i}-th"]`).textContent = fmtBnNum(d.totalH);
+                    row.querySelector(`[data-v="${i}-tmi"]`).textContent = fmtBnNum(d.totalMi);
+                    row.querySelector(`[data-v="${i}-ts"]`).textContent = fmtBnNum(d.totalS);
+
+                    if (row.classList.contains('active')) {
+                        const body = row.querySelector('.person-body');
+                        if (body.style.maxHeight !== '0px') {
+                            body.style.maxHeight = body.scrollHeight + 'px';
+                        }
+                    }
+                });
+            }
+
+            tick();
+            setInterval(tick, 1000);
+
+            // PWA Service Worker Registration
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
