@@ -42,12 +42,67 @@
             overflow: hidden;
         }
 
+        /* === ফ্লোটিং ব্যাকগ্রাউন্ড ব্লব === */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+            animation: blobFloat linear infinite;
+        }
+
+        .blob-1 {
+            width: 300px; height: 300px;
+            background: var(--primary-light);
+            top: -80px; left: -60px;
+            animation-duration: 18s;
+        }
+
+        .blob-2 {
+            width: 250px; height: 250px;
+            background: var(--accent);
+            bottom: -60px; right: -40px;
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 200px; height: 200px;
+            background: #ba68c8;
+            top: 40%; left: 50%;
+            animation-duration: 25s;
+            animation-delay: -10s;
+        }
+
+        @keyframes blobFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            25%  { transform: translate(40px, -30px) scale(1.1); }
+            50%  { transform: translate(-20px, 40px) scale(0.9); }
+            75%  { transform: translate(30px, 20px) scale(1.05); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* === পেজ লোড ফেইড === */
         .container {
             position: relative; z-index: 1;
             max-width: 480px; margin: 0 auto;
             padding: 8px 14px 4px;
             height: 100%;
             display: flex; flex-direction: column;
+            animation: pageIn 0.7s ease-out forwards;
+        }
+
+        @keyframes pageIn {
+            0%   { opacity: 0; transform: translateY(16px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* === হেডার === */
@@ -57,6 +112,12 @@
             flex-shrink: 0;
             border-bottom: 1px solid var(--border);
             margin-bottom: 8px;
+            animation: headerIn 0.6s ease-out 0.1s both;
+        }
+
+        @keyframes headerIn {
+            0%   { opacity: 0; transform: translateY(-12px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .header-icon-wrap {
@@ -70,14 +131,37 @@
             background: linear-gradient(145deg, var(--primary-mid), var(--primary-dark));
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 12px var(--shadow), 0 0 0 3px #fff, 0 0 0 4px var(--primary-light);
-            transition: transform 0.3s ease;
+            animation: iconPulse 2.5s ease-in-out infinite;
         }
-        .header-icon i { font-size: 20px; color: #fff; }
+
+        .header-icon i {
+            font-size: 20px; color: #fff;
+            animation: heartBeat 1.8s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 4px 12px var(--shadow), 0 0 0 3px #fff, 0 0 0 4px var(--primary-light), 0 0 0 0 rgba(211,47,47,0); }
+            50%      { box-shadow: 0 4px 12px var(--shadow), 0 0 0 3px #fff, 0 0 0 4px var(--primary-light), 0 0 0 10px rgba(211,47,47,0.08); }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14%      { transform: scale(1.15); }
+            28%      { transform: scale(1); }
+            42%      { transform: scale(1.1); }
+            56%      { transform: scale(1); }
+        }
 
         .header h1 {
             font-size: 22px; font-weight: 800;
             color: var(--primary-dark);
             margin-bottom: 4px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0%   { text-shadow: 0 0 0 transparent; }
+            100% { text-shadow: 0 0 20px rgba(198, 40, 40, 0.08); }
         }
         
         #current-date-display {
@@ -89,6 +173,133 @@
             border-radius: 16px;
             display: inline-block;
             margin-top: 4px;
+            animation: dateFadeIn 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes dateFadeIn {
+            0%   { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* === জন্মদিন ব্যানার === */
+        .birthday-banner {
+            background: linear-gradient(135deg, #e53935, #ff6f00, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935);
+            background-size: 400% 400%;
+            animation: bdayGradient 6s ease infinite;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(229, 57, 53, 0.3), 0 0 0 1px rgba(255,255,255,0.15) inset;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .birthday-banner.show {
+            display: block;
+            animation: bdayGradient 6s ease infinite, bdaySlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes bdayGradient {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes bdaySlideIn {
+            0%   { opacity: 0; transform: translateY(-12px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .birthday-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bday-ico {
+            font-size: 22px;
+            color: #fff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .bday-ico.cake {
+            animation: bdayBounce 1.2s ease-in-out infinite alternate;
+        }
+
+        .bday-ico.gift {
+            animation: bdayBounce 1.2s ease-in-out infinite alternate-reverse;
+            animation-delay: 0.3s;
+        }
+
+        .bday-ico.star-l {
+            position: absolute;
+            left: 6px; top: 6px;
+            font-size: 12px;
+            animation: bdayTwinkle 1.5s ease-in-out infinite;
+        }
+
+        .bday-ico.star-r {
+            position: absolute;
+            right: 6px; bottom: 6px;
+            font-size: 12px;
+            animation: bdayTwinkle 1.5s ease-in-out infinite;
+            animation-delay: 0.75s;
+        }
+
+        @keyframes bdayBounce {
+            0%   { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        @keyframes bdayTwinkle {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50%      { opacity: 1; transform: scale(1.2); }
+        }
+
+        .birthday-text {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .birthday-name {
+            display: inline;
+            background: rgba(255,255,255,0.2);
+            padding: 1px 8px;
+            border-radius: 6px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        /* কনফেটি পার্টিকেল */
+        .confetti-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -10px;
+            border-radius: 2px;
+            opacity: 0;
+            animation: confettiFall linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0%   { transform: translateY(-10px) rotate(0deg) scale(1); opacity: 1; }
+            80%  { opacity: 0.8; }
+            100% { transform: translateY(90px) rotate(720deg) scale(0.4); opacity: 0; }
         }
 
         /* === তালিকা এরিয়া === */
@@ -114,17 +325,61 @@
             margin-bottom: 10px;
             overflow: hidden;
             box-shadow: 0 2px 8px var(--shadow);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             flex-shrink: 0;
+
+            /* স্ট্যাগার্ড এন্ট্রান্স */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: rowSlideIn 0.5s ease-out forwards;
         }
-        
+
+        .person-row:nth-child(1) { animation-delay: 0.15s; }
+        .person-row:nth-child(2) { animation-delay: 0.25s; }
+        .person-row:nth-child(3) { animation-delay: 0.35s; }
+        .person-row:nth-child(4) { animation-delay: 0.45s; }
+        .person-row:nth-child(5) { animation-delay: 0.55s; }
+        .person-row:nth-child(6) { animation-delay: 0.65s; }
+
+        @keyframes rowSlideIn {
+            0%   { opacity: 0; transform: translateY(20px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         .person-row:hover {
             border-color: rgba(200, 40, 40, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow);
         }
 
         .person-row.active {
             border-color: var(--primary);
             box-shadow: 0 4px 20px rgba(200, 40, 40, 0.15);
+            transform: translateY(0);
+        }
+
+        .person-row.active:hover {
+            transform: translateY(0);
+        }
+
+        /* জন্মদিনের রো হাইলাইট */
+        .person-row.birthday-today {
+            border-color: #ff6f00;
+            box-shadow: 0 2px 16px rgba(255, 111, 0, 0.2);
+            background: linear-gradient(135deg, #fff8e1, #ffffff);
+        }
+
+        .person-row.birthday-today:hover {
+            box-shadow: 0 6px 24px rgba(255, 111, 0, 0.25);
+        }
+
+        .person-row.birthday-today .person-avatar {
+            animation: avatarPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 111, 0, 0.4); }
+            50%      { box-shadow: 0 0 0 8px rgba(255, 111, 0, 0); }
         }
 
         .person-head {
@@ -144,6 +399,16 @@
             font-size: 16px; font-weight: 800;
             flex-shrink: 0;
             color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .person-row:hover .person-avatar {
+            transform: scale(1.08) rotate(-3deg);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .person-row.active:hover .person-avatar {
+            transform: scale(1) rotate(0deg);
         }
 
         .person-info { flex: 1; min-width: 0; }
@@ -151,6 +416,15 @@
         .person-name {
             font-size: 14px; font-weight: 700; color: var(--text-light);
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            transition: color 0.3s ease;
+        }
+
+        .person-row.birthday-today .person-name {
+            color: #e65100;
+        }
+
+        .person-row:hover .person-name {
+            color: var(--primary-dark);
         }
 
         .person-dob {
@@ -163,19 +437,55 @@
 
         .person-brief-age {
             font-size: 13px; font-weight: 800; color: var(--primary);
+            transition: transform 0.2s ease;
+        }
+
+        .person-row:hover .person-brief-age {
+            transform: scale(1.05);
         }
 
         .person-brief-sub {
             font-size: 10px; color: var(--text-muted); margin-top: 2px;
+            transition: color 0.3s ease;
+        }
+
+        .person-row:hover .person-brief-sub {
+            color: var(--text-light);
+        }
+
+        /* জন্মদিনের ব্যাজ */
+        .birthday-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #ff6f00, #e53935);
+            padding: 2px 7px;
+            border-radius: 8px;
+            margin-top: 3px;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        .birthday-badge i { font-size: 8px; }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.05); }
         }
 
         .person-chevron {
             width: 22px; height: 22px;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, color 0.3s ease;
             color: var(--text-muted);
             font-size: 12px;
+        }
+
+        .person-row:hover .person-chevron {
+            color: var(--primary-light);
         }
 
         .person-row.active .person-chevron {
@@ -202,10 +512,16 @@
         .body-card {
             background: #fdfdfd; border: 1px solid var(--border);
             border-radius: 10px; padding: 10px 4px; text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .body-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
         .body-card-val {
             font-size: 19px; font-weight: 700; color: var(--text);
             line-height: 1.1; font-variant-numeric: tabular-nums;
+            transition: color 0.3s ease;
         }
         .body-card-lbl {
             font-size: 9px; color: var(--text-muted);
@@ -214,12 +530,27 @@
         .body-cards.primary .body-card {
             background: linear-gradient(145deg, var(--primary), var(--primary-dark));
             border: none; color: #fff;
+            box-shadow: 0 4px 16px rgba(198, 40, 40, 0.25);
+        }
+        .body-cards.primary .body-card:hover {
+            box-shadow: 0 6px 20px rgba(198, 40, 40, 0.35);
         }
         .body-cards.primary .body-card-val {
             font-size: 28px; font-weight: 800; color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
         .body-cards.primary .body-card-lbl {
             font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.8);
+        }
+
+        /* প্রাইমারি কার্ডে নম্বর গ্লো */
+        .body-cards.primary .body-card-val {
+            animation: numberGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes numberGlow {
+            0%   { text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+            100% { text-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 16px rgba(255,255,255,0.15); }
         }
 
         .body-text-bar {
@@ -229,19 +560,41 @@
             border-radius: 8px;
             font-size: 12px; font-weight: 700; color: var(--primary-dark);
             margin-bottom: 12px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* জন্মদিনের বডি বার */
+        .body-text-bar.birthday-bar {
+            background: linear-gradient(135deg, rgba(255,111,0,0.08), rgba(229,57,53,0.08));
+            border-color: rgba(255,111,0,0.2);
+            color: #e65100;
+            animation: birthdayBarGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes birthdayBarGlow {
+            0%   { box-shadow: 0 0 0 0 rgba(255,111,0,0); }
+            100% { box-shadow: 0 0 12px 0 rgba(255,111,0,0.1); }
         }
 
         .body-total-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 8px 6px;
             border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s ease;
         }
         .body-total-row:last-child { border-bottom: none; }
+        .body-total-row:hover {
+            background-color: rgba(44, 62, 80, 0.02);
+        }
         .body-total-left { display: flex; align-items: center; gap: 8px; }
         .body-total-ico {
             width: 24px; height: 24px; border-radius: 6px;
             display: flex; align-items: center; justify-content: center;
             font-size: 10px; flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+        .body-total-row:hover .body-total-ico {
+            transform: scale(1.15) rotate(-5deg);
         }
         .body-total-ico.c1 { background: rgba(255,171,64,0.15); color: #ff8f00; }
         .body-total-ico.c2 { background: rgba(239,83,80,0.15); color: #ef5350; }
@@ -250,7 +603,14 @@
         .body-total-ico.c5 { background: rgba(186,104,200,0.15); color: #ba68c8; }
         .body-total-ico.c6 { background: rgba(255,138,101,0.15); color: #ff8a65; }
         .body-total-lbl { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-        .body-total-val { font-size: 12px; font-weight: 700; color: var(--text-light); font-variant-numeric: tabular-nums; }
+        .body-total-val {
+            font-size: 12px; font-weight: 700; color: var(--text-light);
+            font-variant-numeric: tabular-nums;
+            transition: color 0.2s ease;
+        }
+        .body-total-row:hover .body-total-val {
+            color: var(--primary);
+        }
 
         /* === ফুটার === */
         .footer {
@@ -258,8 +618,38 @@
             border-top: 1px solid var(--border);
             font-size: 10px; color: #b0b8c0;
             flex-shrink: 0;
+            animation: footerIn 0.6s ease-out 0.8s both;
         }
-        .footer i { color: var(--primary-light); margin: 0 3px; font-size: 8px; }
+
+        @keyframes footerIn {
+            0%   { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .footer i {
+            color: var(--primary-light);
+            margin: 0 3px;
+            font-size: 8px;
+            animation: footerHeart 1.5s ease-in-out infinite;
+        }
+
+        @keyframes footerHeart {
+            0%, 100% { transform: scale(1); }
+            15%      { transform: scale(1.3); }
+            30%      { transform: scale(1); }
+            45%      { transform: scale(1.2); }
+            60%      { transform: scale(1); }
+        }
+
+        /* === সেকেন্ড টিক অ্যানিমেশন === */
+        .tick-pulse {
+            animation: tickPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes tickPulse {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.6; }
+        }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -271,6 +661,13 @@
 </head>
 <body>
 
+    <!-- ফ্লোটিং ব্যাকগ্রাউন্ড ব্লব -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="header-icon-wrap">
@@ -279,6 +676,18 @@
             <h1>বয়স গণনা</h1>
             <div id="current-date-display">...</div>
         </header>
+
+        <!-- জন্মদিন ব্যানার -->
+        <div class="birthday-banner" id="birthdayBanner">
+            <div class="confetti-container" id="confettiContainer"></div>
+            <i class="fas fa-star bday-ico star-l"></i>
+            <i class="fas fa-star bday-ico star-r"></i>
+            <div class="birthday-content">
+                <i class="fas fa-cake-candles bday-ico cake"></i>
+                <div class="birthday-text" id="birthdayText"></div>
+                <i class="fas fa-gift bday-ico gift"></i>
+            </div>
+        </div>
 
         <div class="list-area" id="listArea"></div>
 
@@ -327,6 +736,91 @@
                 { name: 'রাজীব আল হাসান (রুশো)',       dob: new Date(2012, 0, 30, 13, 10, 0), color: '#8e24aa', icon: 'fa-male' },
                 { name: 'জাকিয়া তাসনিম স্বপ্ন',            dob: new Date(2007, 1, 19, 22, 30, 0), color: '#ff8f00', icon: 'fa-female' },
             ].sort((a,b) => b.dob - a.dob);
+
+            /* ====== জন্মদিন চেক ====== */
+            function getBirthdayPeople() {
+                const now = new Date();
+                const todayM = now.getMonth();
+                const todayD = now.getDate();
+                return PEOPLE.filter(p => p.dob.getMonth() === todayM && p.dob.getDate() === todayD);
+            }
+
+            /* ====== কনফেটি তৈরি ====== */
+            function createConfetti() {
+                const container = document.getElementById('confettiContainer');
+                container.innerHTML = '';
+                const colors = ['#e53935','#ff6f00','#fdd835','#43a047','#1e88e5','#8e24aa','#fff','#ff80ab'];
+
+                for (let i = 0; i < 28; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    const w = 4 + Math.random() * 6;
+                    const h = 4 + Math.random() * 8;
+                    piece.style.width = w + 'px';
+                    piece.style.height = h + 'px';
+                    piece.style.left = Math.random() * 100 + '%';
+                    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+                    piece.style.animationDelay = Math.random() * 4 + 's';
+                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    container.appendChild(piece);
+                }
+            }
+
+            /* ====== জন্মদিন ব্যানার আপডেট ====== */
+            let lastBdayState = null;
+
+            function updateBirthdayBanner() {
+                const banner = document.getElementById('birthdayBanner');
+                const textEl = document.getElementById('birthdayText');
+                const bdayPeople = getBirthdayPeople();
+                const stateKey = bdayPeople.map(p => p.name).join('|');
+
+                // স্টেট পরিবর্তন হলেই DOM আপডেট
+                if (stateKey === lastBdayState) return;
+                lastBdayState = stateKey;
+
+                if (bdayPeople.length > 0) {
+                    const namesHtml = bdayPeople.map(p =>
+                        `<span class="birthday-name">${p.name}</span>`
+                    ).join(' ');
+
+                    textEl.innerHTML = `জন্মদিনের শুভেচ্ছা ${namesHtml}`;
+
+                    banner.classList.add('show');
+                    createConfetti();
+
+                    PEOPLE.forEach((p, i) => {
+                        const isBday = bdayPeople.some(bp => bp === p);
+                        const row = rows[i];
+                        if (isBday) {
+                            row.classList.add('birthday-today');
+                            if (!row.querySelector('.birthday-badge')) {
+                                const briefSub = row.querySelector('.person-brief-sub');
+                                briefSub.innerHTML = '<span class="birthday-badge"><i class="fas fa-cake-candles"></i> আজই জন্মদিন</span>';
+                            }
+                        } else {
+                            row.classList.remove('birthday-today');
+                            const badge = row.querySelector('.birthday-badge');
+                            if (badge) {
+                                const briefSub = row.querySelector('.person-brief-sub');
+                                briefSub.textContent = 'বিস্তারিত';
+                            }
+                        }
+                    });
+                } else {
+                    banner.classList.remove('show');
+                    PEOPLE.forEach((p, i) => {
+                        const row = rows[i];
+                        row.classList.remove('birthday-today');
+                        const badge = row.querySelector('.birthday-badge');
+                        if (badge) {
+                            const briefSub = row.querySelector('.person-brief-sub');
+                            briefSub.textContent = 'বিস্তারিত';
+                        }
+                    });
+                }
+            }
 
             /* ====== বয়স হিসাব ====== */
             function calcAge(dob) {
@@ -408,7 +902,7 @@
                             <div class="body-cards">
                                 <div class="body-card"><div class="body-card-val" data-v="${i}-h">০০</div><div class="body-card-lbl">ঘণ্টা</div></div>
                                 <div class="body-card"><div class="body-card-val" data-v="${i}-mi">০০</div><div class="body-card-lbl">মিনিট</div></div>
-                                <div class="body-card"><div class="body-card-val" data-v="${i}-s">০০</div><div class="body-card-lbl">সেকেন্ড</div></div>
+                                <div class="body-card"><div class="body-card-val tick-pulse" data-v="${i}-s">০০</div><div class="body-card-lbl">সেকেন্ড</div></div>
                             </div>
                             <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c1"><i class="fas fa-calendar"></i></div><span class="body-total-lbl">মোট মাস</span></div><span class="body-total-val" data-v="${i}-tmo">০</span></div>
                             <div class="body-total-row"><div class="body-total-left"><div class="body-total-ico c2"><i class="fas fa-calendar-week"></i></div><span class="body-total-lbl">মোট সপ্তাহ</span></div><span class="body-total-val" data-v="${i}-tw">০</span></div>
@@ -443,11 +937,12 @@
 
             /* ====== আপডেট লুপ ====== */
             function tick() {
-                // Update current date display
                 const now = new Date();
                 const day = BN_DAYS[now.getDay()];
                 const date = fmtDob(now);
                 currentDateEl.textContent = `আজ ${day}, ${date}`;
+
+                updateBirthdayBanner();
 
                 PEOPLE.forEach((p, i) => {
                     const d = calcAge(p.dob);
@@ -463,11 +958,20 @@
                         return;
                     }
 
+                    const isBday = row.classList.contains('birthday-today');
+
                     const briefText = d.y > 0 ? `${toBn(d.y)} বছর ${toBn(d.mo)} মাস`
                                    : d.mo > 0 ? `${toBn(d.mo)} মাস ${toBn(d.d)} দিন`
                                               : `${toBn(d.d)} দিন`;
                     briefEl.textContent = briefText;
-                    textBarEl.textContent = `${toBn(d.y)} বছর ${toBn(d.mo)} মাস ${toBn(d.d)} দিন`;
+
+                    if (isBday) {
+                        textBarEl.classList.add('birthday-bar');
+                        textBarEl.innerHTML = `<i class="fas fa-cake-candles" style="margin-right:4px;"></i> আজ ${toBn(d.y)} বছর পূর্ণ! ${toBn(d.y)} বছর ${toBn(d.mo)} মাস ${toBn(d.d)} দিন`;
+                    } else {
+                        textBarEl.classList.remove('birthday-bar');
+                        textBarEl.textContent = `${toBn(d.y)} বছর ${toBn(d.mo)} মাস ${toBn(d.d)} দিন`;
+                    }
 
                     row.querySelector(`[data-v="${i}-y"]`).textContent = toBn(pad(d.y));
                     row.querySelector(`[data-v="${i}-mo"]`).textContent = toBn(pad(d.mo));
@@ -495,7 +999,6 @@
             tick();
             setInterval(tick, 1000);
 
-            // GitHub-friendly Relative Registration (./sw.js)
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('./sw.js')
